@@ -57,5 +57,4 @@ namespace Scripts.Player
         
     }
 }
-// FINISH MOVEMENT AND ADD MAP
 // TILEMAP VIDEO

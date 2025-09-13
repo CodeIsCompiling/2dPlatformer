@@ -1,12 +1,9 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour
+namespace Player
 {
-    void Update()
+    public class Player : MonoBehaviour
     {
-        //if (Input.GetKey(KeyCode.D))
-        {
-            
-        }
+    
     }
 }
