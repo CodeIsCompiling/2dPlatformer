@@ -3,16 +3,26 @@ using UnityEngine;
 
 namespace Player_2
 {
+    
     public class Player2Mover : MonoBehaviour
     {
+        private static readonly int Speed = Animator.StringToHash("Speed");
+        private static readonly int Grounded = Animator.StringToHash("Grounded");
         public Rigidbody2D rb;
         public int speed = 10;
         public float groundCheckDistance = 0.1f;
         public LayerMask groundLayer;
         public Transform groundCheck;
         public Vector2 groundCheckSize;
+        public Animator animator;
+        public Collider2D collider2d;
         [SerializeField] private Vector3 halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
-        
+
+        void OnDestroy()
+        {
+            SetBounce(0f);
+        }
+
         private void FixedUpdate()
         {
             float moveInputX = 0f;
@@ -30,13 +40,14 @@ namespace Player_2
             }
 
             RaycastHit2D hit = Physics2D.BoxCast(groundCheck.position, groundCheckSize, 0f, Vector2.down, groundCheckDistance, groundLayer);
-            
-            if (hit.collider != null && Input.GetKey(KeyCode.W))
+            bool isGrounded = hit.collider != null;
+            if (isGrounded && Input.GetKey(KeyCode.W))
             {
                 rb.linearVelocityY = 10;
             }
             rb.linearVelocityX = moveInputX * speed;
-            
+            animator.SetFloat(Speed,  MathF.Abs(moveInputX));
+            animator.SetBool(Grounded, isGrounded);
         }
 
         /*private void OnDrawGizmos()
@@ -59,5 +70,9 @@ namespace Player_2
 
             Gizmos.DrawWireCube(end, halfExtents * 2);
         }*/
+        public void SetBounce(float bounce)
+        {
+            collider2d.sharedMaterial.bounciness = bounce;
+        }
     }
 }
