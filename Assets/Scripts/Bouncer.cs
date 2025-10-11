@@ -1,5 +1,5 @@
 using System;
-using Scripts.Player;
+using Player;
 using UnityEngine;
 
 public class Bouncer : MonoBehaviour

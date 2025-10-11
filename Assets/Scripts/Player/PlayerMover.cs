@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Scripts.Player
+namespace Player
 {
     public class PlayerMover : MonoBehaviour
     {
@@ -57,4 +57,3 @@ namespace Scripts.Player
         
     }
 }
-// TILEMAP VIDEO

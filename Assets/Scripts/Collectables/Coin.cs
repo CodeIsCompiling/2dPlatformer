@@ -1,12 +1,15 @@
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+namespace Collectables
 {
-    public Collectables collectables;
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public class Coin : MonoBehaviour
     {
-        collectables.CoinsCollected++;
-        Destroy(gameObject);
+        public Collectable collectable;
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            collectable.CoinsCollected++;
+            Destroy(gameObject);
+        }
     }
 }

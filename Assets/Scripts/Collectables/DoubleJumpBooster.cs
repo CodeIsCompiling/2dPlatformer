@@ -3,12 +3,16 @@ using UnityEngine;
 
 namespace Collectables
 {
-    public class JumpBooster : MonoBehaviour
+    public class DoubleJumpBooster : MonoBehaviour
     {
+        public int jumpBoost;
         private void OnTriggerEnter2D(Collider2D other)
         {
             Player2Mover player2Mover = other.gameObject.GetComponent<Player2Mover>();
-            player2Mover.SetBounce(0.75f);
+            if (player2Mover.maxJumps < jumpBoost)
+            {
+                player2Mover.maxJumps = jumpBoost;
+            }
             Destroy(gameObject);
         }
     }
