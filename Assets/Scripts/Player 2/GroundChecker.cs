@@ -5,7 +5,7 @@ namespace Player_2
 {
     public class GroundChecker : MonoBehaviour
     {
-        public bool isTouchingGround = false;
+        public bool isTouchingGround;
         public event Action<bool> OnGroundTouched;
         
         private void OnTriggerEnter2D(Collider2D other)

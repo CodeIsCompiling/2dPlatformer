@@ -1,7 +1,5 @@
 using System;
 using DG.Tweening;
-using Player;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Player_2
@@ -9,15 +7,8 @@ namespace Player_2
     
     public class Player2Mover : MonoBehaviour
     {
-        private static readonly int Speed = Animator.StringToHash("Speed");
-        private static readonly int Grounded = Animator.StringToHash("Grounded");
-        private static readonly int Dashing = Animator.StringToHash("Dashing");
         public Rigidbody2D rb;
         public float speed = 10;
-        public float groundCheckDistance = 0.1f;
-        public LayerMask groundLayer;
-        public Transform groundCheck;
-        public Vector2 groundCheckSize;
         public Animator animator;
         public Collider2D collider2d;
         public int maxDashes = 100;
@@ -28,12 +19,16 @@ namespace Player_2
         public GroundChecker  groundChecker;
         public bool isGrounded;
         public bool isDashing;
-        public bool jumpInAir = true;
         public int maxJumps = 2;
-        public int currentJumps = 0;
+        public int currentJumps;
+        public float acceleration;
+        public bool isTouchingWall;
+        public Player2 player2;
+        private static readonly int Speed = Animator.StringToHash("Speed");
+        private static readonly int Grounded = Animator.StringToHash("Grounded");
+        private static readonly int Dashing = Animator.StringToHash("Dashing");
         private Tweener _dashTweener;
-        private float moveInputX = 0f;
-        [SerializeField] private Vector3 halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
+        private float _moveInputX;
 
         private void OnEnable()
         {
@@ -54,6 +49,7 @@ namespace Player_2
                 _dashTweener?.Kill();
                 isDashing = false;
             }
+            isTouchingWall = isTouched;
         }
         
         //Ground touched
@@ -75,12 +71,15 @@ namespace Player_2
         private void FixedUpdate()
         {
             //Moving
-            rb.linearVelocityX = moveInputX * speed;
-            
+            float targetVelocityX = _moveInputX * speed;
+            float smoothedVelocityX = Mathf.Lerp(rb.linearVelocityX, targetVelocityX, acceleration * Time.fixedDeltaTime);
+            rb.linearVelocityX = smoothedVelocityX;
+
         }
 
         private void Update()
         {
+            
             // Dashing
             if (isGrounded)
             {
@@ -102,15 +101,15 @@ namespace Player_2
             }
             
             //Moving
-            moveInputX = 0;
+            _moveInputX = 0;
             if (Input.GetKey(KeyCode.A))
             {
-                if (!isDashing)
+                if (!isDashing && !isTouchingWall)
                 {
                     transform.localScale = new Vector3(-1, 1, 1);
                     directionFaced = -1;
                 }
-                moveInputX = -1;
+                _moveInputX = -1;
             }
         
             if (Input.GetKey(KeyCode.D))
@@ -120,11 +119,11 @@ namespace Player_2
                     transform.localScale = new Vector3(1, 1, 1);
                     directionFaced = 1;
                 }
-                moveInputX = 1;
+                _moveInputX = 1;
             }
             
             // Animations
-            animator.SetFloat(Speed,  MathF.Abs(moveInputX));
+            animator.SetFloat(Speed,  MathF.Abs(_moveInputX));
             animator.SetBool(Grounded, isGrounded);
             animator.SetBool(Dashing, isDashing);
         }
@@ -138,9 +137,13 @@ namespace Player_2
         //Dash
         private void Dash()
         {
-            rb.linearVelocityY = 0;
             isDashing = true;
-            _dashTweener = rb.DOMoveX(13 * directionFaced + rb.transform.position.x, dashSpeed).SetEase(Ease.Linear).OnComplete(OnDashComplete);
+            DashParticles dashParticles = player2.DashParticlesPool.Get();
+            dashParticles.gameObject.transform.localScale = transform.localScale;
+            dashParticles.transform.position = transform.position + new Vector3(-1 * transform.localScale.x, -1.25f, 0);
+            //_dashTweener = rb.DOMoveX(7 * directionFaced + rb.transform.position.x, dashSpeed).SetEase(Ease.Linear).OnComplete(OnDashComplete);
+            rb.AddForceX(100 * directionFaced * speed);
+            DOVirtual.DelayedCall(dashSpeed, OnDashComplete);
             dashesLeft--;
         }
 

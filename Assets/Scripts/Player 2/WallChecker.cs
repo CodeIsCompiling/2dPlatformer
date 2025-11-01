@@ -5,7 +5,7 @@ namespace Player_2
 {
     public class WallChecker : MonoBehaviour
     {
-        public bool isTouchingWall = false;
+        public bool isTouchingWall;
         public event Action<bool> OnWallTouched;
 
         private void OnTriggerEnter2D(Collider2D other)
