@@ -1,22 +1,39 @@
 using System;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Player_2
 {
     public class HealthSystem : MonoBehaviour
     {
+        public int maxHealth = 100;
         public int currentHealth;
-        public int maxHealth;
         public int temporaryHealth;
-        public event Action<int> OnHealthChanged; 
+        public float invincibilityCooldown = 3f;
+        public event Action<int> OnHealthChanged;
+        public bool IsInvincible => _lastTimeDamaged < invincibilityCooldown;
+        private float _lastTimeDamaged;
+
+        private void Awake()
+        {
+            currentHealth = maxHealth;
+        }
+
+        private void Update()
+        {
+            _lastTimeDamaged += Time.deltaTime;
+        }
 
         public void TakeDamage(int damage)
         {
-            if (temporaryHealth > 0)
+            if (IsInvincible)
             {
-                temporaryHealth -= damage;
+                return;
             }
-
+            
+            temporaryHealth -= damage;
+            _lastTimeDamaged = 0;
+            
             if (temporaryHealth < 0)
             {
                 currentHealth += temporaryHealth;

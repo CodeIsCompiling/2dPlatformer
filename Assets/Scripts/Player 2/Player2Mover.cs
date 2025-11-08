@@ -23,6 +23,8 @@ namespace Player_2
         public int currentJumps;
         public float acceleration;
         public bool isTouchingWall;
+        public bool canWallJump;
+        public bool canWallCling;
         public Player2 player2;
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Grounded = Animator.StringToHash("Grounded");
@@ -87,7 +89,7 @@ namespace Player_2
             }
             bool canDash = (dashesLeft > 0);
             
-            if (canDash && Input.GetKeyDown(KeyCode.F) && !wallChecker.isTouchingWall)
+            if (canDash && Input.GetKeyDown(KeyCode.Mouse0) && !wallChecker.isTouchingWall)
             {
                 Dash();
             }
@@ -98,6 +100,27 @@ namespace Player_2
                 rb.linearVelocityY = 10;
                 currentJumps++;
                 isGrounded = false;
+            }
+            
+            // Wall Jumping
+            if (canWallJump)
+            {
+                if (isTouchingWall && Input.GetKeyDown(KeyCode.W))
+                {
+                    rb.linearVelocityY = 1 * speed;
+                    rb.linearVelocityX = 1 * speed * -directionFaced;
+                    dashesLeft = maxDashes;
+                    currentJumps = 0;
+                }
+            }
+            
+            // Wall Cling
+            if (!canWallCling)
+            {
+                if (isTouchingWall && !isGrounded)
+                {
+                    rb.linearVelocityX = 0.2f * speed * -directionFaced;;
+                }
             }
             
             //Moving

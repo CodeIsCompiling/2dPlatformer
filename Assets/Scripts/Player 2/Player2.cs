@@ -12,7 +12,7 @@ namespace Player_2
         private void Awake()
         {
             DashParticlesPool = new ObjectPool<DashParticles>(
-                createFunc:CreateParticles, actionOnGet:OnGet, actionOnRelease:OnRelease, actionOnDestroy:OnDestroyed, defaultCapacity:16);
+                createFunc:CreateParticles, actionOnGet:OnGet, actionOnRelease:OnRelease, actionOnDestroy:OnDestroyed, defaultCapacity:64);
         }
         
         private void OnDestroyed(DashParticles obj)
